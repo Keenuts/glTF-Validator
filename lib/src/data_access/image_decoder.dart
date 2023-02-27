@@ -20,11 +20,11 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
-enum ImageCodec { JPEG, PNG, WebP, KTX2 }
+enum ImageCodec { JPEG, PNG, WebP, KTX2, DDS }
 
 extension ImageCodecMimeType on ImageCodec {
   String get mimeType =>
-      const ['image/jpeg', 'image/png', 'image/webp', 'image/ktx2'][index];
+      const ['image/jpeg', 'image/png', 'image/webp', 'image/ktx2', 'image/vnd-ms.dds'][index];
 }
 
 enum _ColorPrimaries { Unknown, sRGB, Custom }
@@ -151,6 +151,11 @@ class ImageInfo {
         byteData.getUint32(4, Endian.little) == 0xBB303220 &&
         byteData.getUint32(8, Endian.little) == 0x0A1A0A0D) {
       return ImageCodec.KTX2;
+    }
+
+    // DDS signature: 20 53 44 44
+    if (dword0 == 0x20534444) {
+      return ImageCodec.DDS;
     }
 
     return null;
